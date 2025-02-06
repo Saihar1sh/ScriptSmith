@@ -4,40 +4,39 @@ using UnityEngine;
 
 namespace Arixen.ScriptSmith
 {
-[Serializable]
-public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
-{
-    [SerializeField] private List<TKey> keys = new List<TKey>();
-    [SerializeField] private List<TValue> values = new List<TValue>();
-
-    // Unity serialization callback before serialization
-    public void OnBeforeSerialize()
+    [Serializable]
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        keys.Clear();
-        values.Clear();
+        [SerializeField] private List<TKey> keys = new List<TKey>();
+        [SerializeField] private List<TValue> values = new List<TValue>();
 
-        foreach (var kvp in this)
+        // Unity serialization callback before serialization
+        public void OnBeforeSerialize()
         {
-            keys.Add(kvp.Key);
-            values.Add(kvp.Value);
+            keys.Clear();
+            values.Clear();
+
+            foreach (var kvp in this)
+            {
+                keys.Add(kvp.Key);
+                values.Add(kvp.Value);
+            }
+        }
+
+        // Unity serialization callback after deserialization
+        public void OnAfterDeserialize()
+        {
+            this.Clear();
+
+            if (keys.Count != values.Count)
+            {
+                throw new Exception("The number of keys and values in the dictionary do not match.");
+            }
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                this[keys[i]] = values[i];
+            }
         }
     }
-
-    // Unity serialization callback after deserialization
-    public void OnAfterDeserialize()
-    {
-        this.Clear();
-
-        if (keys.Count != values.Count)
-        {
-            throw new Exception("The number of keys and values in the dictionary do not match.");
-        }
-
-        for (int i = 0; i < keys.Count; i++)
-        {
-            this[keys[i]] = values[i];
-        }
-    }
-
-}
 }
