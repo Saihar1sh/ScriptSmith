@@ -11,7 +11,7 @@ namespace Arixen.ScriptSmith
 
         protected BaseState<TEState> CurrentState;
 
-        [field: SerializeField] public TEState StateName => CurrentState.StateName;
+        public TEState StateName => CurrentState.StateName;
 
         private bool isTransitioningState = false;
 
