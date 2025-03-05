@@ -7,9 +7,9 @@ namespace Arixen.ScriptSmith
 {
     public static class EventBusService
     {
-        public delegate void EventDelegate<T>(T e) where T : GameEventData;
+        public delegate void EventDelegate<T>(T e) where T : IGameEventData;
 
-        private delegate void EventDelegate(GameEventData e);
+        private delegate void EventDelegate(IGameEventData e);
 
         private static Dictionary<Type, EventDelegate> m_events_dictionary;
 
@@ -18,7 +18,7 @@ namespace Arixen.ScriptSmith
             m_events_dictionary = new Dictionary<Type, EventDelegate>();
         }
 
-        public static void Subscribe<T>(EventDelegate<T> listener) where T : GameEventData
+        public static void Subscribe<T>(EventDelegate<T> listener) where T : IGameEventData
         {
             EventDelegate eve = (e) => listener((T)e);
             if (!m_events_dictionary.TryAdd(typeof(T), eve))
@@ -27,7 +27,7 @@ namespace Arixen.ScriptSmith
             }
         }
 
-        public static void UnSubscribe<T>(EventDelegate<T> listener) where T : GameEventData
+        public static void UnSubscribe<T>(EventDelegate<T> listener) where T : IGameEventData
         {
             EventDelegate eve = (e) => listener((T)e);
             if (m_events_dictionary.TryGetValue(typeof(T), out EventDelegate _event))
@@ -36,12 +36,12 @@ namespace Arixen.ScriptSmith
             }
         }
 
-        public static void UnSubscribeAll<T>() where T : GameEventData
+        public static void UnSubscribeAll<T>() where T : IGameEventData
         {
             m_events_dictionary.Remove(typeof(T));
         }
 
-        public static void InvokeEvent(GameEventData gameEventData)
+        public static void InvokeEvent(IGameEventData gameEventData)
         {
             if (m_events_dictionary.TryGetValue(gameEventData.GetType(), out EventDelegate _event))
             {
@@ -50,7 +50,7 @@ namespace Arixen.ScriptSmith
         }
     }
 
-    public class GameEventData
+    public interface IGameEventData
     {
         
     }
